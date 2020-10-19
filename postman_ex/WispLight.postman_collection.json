@@ -1,0 +1,119 @@
+{
+	"info": {
+		"_postman_id": "8d860c01-0d2b-4f19-8761-c27d3c47f477",
+		"name": "WispLight",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "01_startSession",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/pp-restapi-wl/v1/users/actions/start-session/c8e7c816-2d84-43cb-b961-15cae477a3b5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"pp-restapi-wl",
+						"v1",
+						"users",
+						"actions",
+						"start-session",
+						"c8e7c816-2d84-43cb-b961-15cae477a3b5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "02_addWallet",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"approveTerms\": {\n        \"privacy\": true,\n        \"terms\": true\n    },\n    \"wallet\" : {\n        \"idWallet\" : 32323,\n        \"creditCard\" : {\n            \"id\" : 3232,\n            \"holder\" : \"Mary Reyes\",\n            \"pan\" : \"4539970000000006\",\n            \"expireMonth\" : 11,\n            \"expireYear\" : 34,\n            \"securityCode\" : 2323,\n            \"brandLogo\" : \"fefwfwf\",\n            \"flag3dsVerified\" : false,\n            \"brand\" : \"erererer\",\n            \"onUs\" : false\n        },\n        \"psp\" : \"Banca PSP Test\",\n        \"idPsp\" : 232424,\n        \"pspEditable\" : false,\n        \"idPaymentFromEC\" : \"c8e7c816-2d84-43cb-b961-15cae477a3b5\",\n        \"jiffyCellphoneNumber\" : \"efefefeef\",\n        \"pspListNotOnUs\" : \"erere\",\n        \"isPspToIgnore\" : false,\n        \"registeredNexi\" : false,\n        \"matchedPsp\" : true\n    }\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/pp-restapi-wl/v1/wallet",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"pp-restapi-wl",
+						"v1",
+						"wallet"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "03_pay",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"idWallet\" : 223,\n    \"cvv\" : 962,\n    \"type\" : \"web\",\n    \"mobileToken\" : \"798798798n7979jy8\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/pp-restapi-wl/v1/payments/c8e7c816-2d84-43cb-b961-15cae477a3b5/actions/pay",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"pp-restapi-wl",
+						"v1",
+						"payments",
+						"c8e7c816-2d84-43cb-b961-15cae477a3b5",
+						"actions",
+						"pay"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "90a0097a-9169-495d-95dd-5667e84edbd8",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "af878927-f810-40d1-979d-da87bfdd1c8d",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}

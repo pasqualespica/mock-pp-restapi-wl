@@ -1,0 +1,456 @@
+swagger: "2.0"
+info:
+  description: This is the swagger file used by PM for WispLight integration
+  version: "1.0.1"
+  title: Swagger WispLight for PM
+consumes:
+  - application/json
+produces:
+  - application/json
+
+basePath: /pp-restapi-wl/v1/
+
+tags:
+- name: Payment
+  description: payment related services
+- name: Transaction
+  description: transaction related services
+- name: Wallet
+  description: wallet related services
+
+# Paths supported by the server application
+paths:
+  # 01_startSession
+  /users/actions/start-session/{idPayment}:
+    get:
+      operationId: pm_controller.startSession
+      tags:
+        - Payment
+      summary: Return payment and session token
+      description: This endpoint will jointly perform the functionality of the `checkPayment` and `startSession` of **pp-restapi-web**, in that order, returning an object consisting of payment and Session ID
+      parameters:
+        - name: idPayment
+          in: path
+          type: string
+          description: Alphanumeric string of 36 characters
+          required: True
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Payment'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: Not found
+          schema:
+            $ref: '#/definitions/Error'
+        '408':
+          description: Request Timeout
+          schema:
+            $ref: '#/definitions/Error'
+        '422':
+          description: Unprocessable entry
+          schema:
+            $ref: '#/definitions/Error'
+  # 03_pay
+  /payments/{idPayment}/actions/pay:
+    post:
+      operationId: pm_controller.pay
+      tags:
+        - Payment
+      summary: Payment request
+      description: Once the user has triggered the payment, the WL will send the WISP a payment request
+      parameters:
+        - name: idPayment
+          in: path
+          type: string
+          description: Alphanumeric string of 36 characters
+          required: True
+        - name: Wallet
+          in: body
+          description: informative
+          required: true
+          schema:
+            $ref: '#/definitions/Wallet'
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/SimpleSuccess'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Error'
+        '408':
+          description: Request Timeout
+          schema:
+            $ref: '#/definitions/Error'
+        '422':
+          description: Unprocessable entry
+          schema:
+            $ref: '#/definitions/Error'
+   # 02_addWallet
+  /wallet:
+    post:
+      operationId: pm_controller.addWallet
+      tags:
+        - Wallet
+      summary: Add wallet
+      description: This endpoint will jointly perform the functionality of the `addWallet` and `approveTerms` of **pp-restapi-web**, sending both the wallet and the acceptance terms (approveTerms).
+      parameters:
+        - name: Wallet
+          in: body
+          description: wallet
+          required: true
+          schema:
+            $ref: '#/definitions/WalletReq'
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/WalletRes'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: Not found
+          schema:
+            $ref: '#/definitions/Error'
+        '408':
+          description: Request Timeout
+          schema:
+            $ref: '#/definitions/Error'
+        '422':
+          description: Unprocessable entry
+          schema:
+            $ref: '#/definitions/Error'
+# Definition of models
+definitions:
+
+  WalletReq:
+    type: object
+    required:
+    - approveTerms
+    - wallet
+    properties:
+      approveTerms:
+        type: object
+        description : Approval Term
+        required:
+        - privacy
+        - terms
+        properties:
+          privacy: 
+            type: boolean
+            description: privacy
+            example: True
+          terms: 
+            type: boolean
+            description: privacy
+            example: True
+      wallet:
+        type: object
+        required:
+        - idWallet
+        - creditCard
+        - psp
+        - idPsp
+        - pspEditable
+        - idPaymentFromEC
+        - jiffyCellphoneNumber
+        - pspListNotOnUs
+        - isPspToIgnore
+        - registeredNexi
+        - matchedPsp        
+        properties:
+          idWallet: 
+            type: number
+            description : wallet identifier
+            example: 224
+          creditCard: 
+            $ref: '#/definitions/creditCard'
+          psp:
+            type: string
+            description : psp name
+            example : "Banca PSP Test"
+          idPsp:
+            type: number
+            description : psp identifier
+            example : 2452524
+          pspEditable:
+            type: boolean
+            description : is editable
+            example : true
+          idPaymentFromEC:
+            type: string
+            description : id payment
+            example : c8e7c816-2d84-43cb-b961-15cae477a3b5        
+          jiffyCellphoneNumber:
+            type: string
+            description : TBD ???
+          pspListNotOnUs:
+            type: string
+            description : TBD ???        
+          isPspToIgnore:
+            type: boolean
+            description : TBD ???        
+          registeredNexi:
+            type: boolean
+            description : is reg on Nexi
+            example : true
+          matchedPsp:
+            type: boolean
+            description : TBD ???
+  creditCard:
+    type: object
+    required: 
+    - id
+    - holder
+    - pan
+    - expireMonth
+    - expireYear
+    - securityCode
+    - brandLogo
+    - flag3dsVerified
+    - brand
+    - onUs
+    properties:
+      id:
+        type: number
+        description: identifier
+        example: 1234
+      holder:
+        type: string
+        description: holder name and surname
+        example: "Mary Reyes"
+      pan:
+        type: string
+        description: payment card number
+        example: "4539970000000006"
+      expireMonth:
+        type: number
+        description: expired month
+        maxLength: 2
+        example: 11
+      expireYear:
+        type: number
+        description: expired year
+        maxLength: 2
+        example: 20
+      securityCode:
+        type: number
+        description: security code
+        example: 333        
+      brandLogo:
+        type: string
+        format: uri
+        description: brand logo
+        example: "blablablabla"        
+      flag3dsVerified:
+        type: boolean
+        description: flag 3ds
+        example: True        
+      brand:
+        type: string
+        description: brand
+        example: ""        
+      onUs:
+        type: boolean
+        description: card onUs
+        example: False        
+  WalletRes:
+    type: object
+    required:
+    - idWallet
+    - creditCard
+    properties:
+      idWallet: 
+        type: number
+        description : wallet identifier
+        example: 224
+      creditCard: 
+        $ref: '#/definitions/creditCard'
+
+  Wallet: 
+    type: object
+    required:
+    - idWallet
+    - cvv
+    - type
+    - mobileToken
+    properties:
+      idWallet:
+        type: number
+        description : wallet identifier
+        example : 223
+      cvv:
+        type: number
+        description : card security code
+        example : 962
+      type:
+        type: string
+        description : source type
+        enum: ["web", "app"]
+      mobileToken:
+        type: string
+        description : mobile token get from IO backend
+        example: None
+
+  Payment:
+    type: object
+    required:
+    - sessionToken
+    - payment
+    properties:
+      sessionToken:
+        type: string
+        format: uuid
+        example: 7a1U5u6q1I6g9t7P5j1x4V6g5n6I4a1i3W0e5u2W4f3s7J2h6c8K8c9n4R5b7o3Q8z1f5O4c7w3H9h2f8Y9e4b4T6p6s4B9t8q7T3k0a6G0d3f5F0b5i8D3f5h9W2g3q
+      payment:
+        type: object
+        properties:
+          id: 
+            type: number
+            description: id of payment
+            example: 563
+          IdPayment : 
+            $ref: '#/definitions/idPayment'
+          amount: {$ref: '#/definitions/amount'}
+          email:
+            type: string
+            description: payer's email address
+            format: email
+            example: user@example.com
+          subject:
+            type: string
+            description: "TBD ???"
+            example: "Pagamento"
+          receiver: 
+            type: string
+            description: "TBD ???"
+            example: "PagoPa"
+          urlRedirectEc:
+            type: string
+            description: Url to redirect to the creditor to be used at the end payment choice
+            format: uri
+            example: "http://localhost:8082/pa/ec?paymentId=a9711488-12fe-4a91-8b5a-f58f0b2657d2"
+          isCancelled: 
+            type: boolean
+            example: False
+          stampFlag: 
+            type: boolean
+            description: YES / NO digital stamp flag
+            example: False
+          fiscalCode: 
+            type: string
+            example: "SXOBBP86C06G702J"
+          origin:
+            type: string
+            example: "WALLET_APP"
+          idCart: 
+            type: string
+            description: id cart
+            example: "fQT2qIxBzZVYuIz"
+          detailsList:
+            type: array
+            items:
+              $ref: '#/definitions/Details'
+          iban:
+            type: string
+            description: International Bank Account Number
+            example: "IT28V7783068935Q514JA19BB8U"
+  Details:
+    type: object
+    required:
+    - IUV
+    - CCP
+    - idDominio
+    - enteBeneficiario
+    properties:
+      IUV:
+        type: string
+        example: '15190924706067024'
+      CCP:
+        type: string
+        example: 1c2168b748bc4b7db1239d725e5c9193
+      idDomain:
+        type: string
+        example: '12345678901'
+      publicAdministration:
+        type: string
+        example: Comune di Test
+      totalAmount:
+        type: number
+        description: total payment amount
+        example: 54154.71
+      payerType:
+        type: string
+        maxLength: 1
+        description: payer identifier
+        example : "G"
+      payerId:
+        type: string
+        description: payer identifier
+        example: "YJIFYF96C50I471P"
+      payerName:
+        type: string
+        description: payer name and surname
+        example : "Mario Rossi"
+  idPayment:
+    type: string
+    description: Alphanumeric string of 36 characters (Unique identifier of a payment)
+    example: 24e1aaf4-9f44-497c-ab97-4669e4efa20
+  amount :
+    type: object
+    description: total payment
+    required:
+    - currency
+    - currencyNumber
+    - amount
+    - decimalDigits
+    properties:
+      currency:
+        type: string
+        example: "EUR"
+      currencyNumber:
+        type: number
+        example: None
+      amount:
+        type: number
+        example: 5415471
+      decimalDigits:
+        type: number
+        example: 2
+  SimpleSuccess:
+    type: object
+    required:
+    - outcome
+    properties:
+      outcome:
+        type: string
+        example: OK
+  Error:
+    type: object
+    required:
+    - detail
+    - status
+    - title
+    - type
+    properties:
+      detail:
+        type: string
+        example: on `action` error for `idPayment`
+      status:
+        type: number
+        example: 404
+      title:
+        type: string
+        example: None
+      type:
+        type: string
+        enum: ["A", "B", "C"]
+        example: "A"
