@@ -79,7 +79,7 @@ paths:
         '200':
           description: successful operation
           schema:
-            $ref: '#/definitions/SimpleSuccess'
+            $ref: '#/definitions/PayResponse'
         '400':
           description: Bad Request
           schema:
@@ -128,6 +128,42 @@ paths:
           description: Unprocessable entry
           schema:
             $ref: '#/definitions/Error'
+   # 04_checkStatus
+  /transactions/{idTransaction}/actions/check:
+    post:
+      operationId: pm_controller.check
+      tags:
+        - Transaction
+      summary: Check transaction 
+      description: The WL will cyclically check the status of the transaction in progress and, once it has received the payment result or the rejected payment, it will redirect the user to the checkout page.
+      parameters:
+        - name: idTransaction
+          in: path
+          type: string
+          description: Alphanumeric string of XX characters
+          required: True        
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/CheckRes'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: Not found
+          schema:
+            $ref: '#/definitions/Error'
+        '408':
+          description: Request Timeout
+          schema:
+            $ref: '#/definitions/Error'
+        '422':
+          description: Unprocessable entry
+          schema:
+            $ref: '#/definitions/Error'
+
 # Definition of models
 definitions:
 
@@ -155,74 +191,74 @@ definitions:
       wallet:
         type: object
         required:
-        - idWallet
+        # - idWallet
         - creditCard
-        - psp
-        - idPsp
-        - pspEditable
+        # - psp
+        # - idPsp
+        # - pspEditable
         - idPaymentFromEC
-        - jiffyCellphoneNumber
-        - pspListNotOnUs
-        - isPspToIgnore
-        - registeredNexi
-        - matchedPsp        
+        # - jiffyCellphoneNumber
+        # - pspListNotOnUs
+        # - isPspToIgnore
+        # - registeredNexi
+        # - matchedPsp        
         properties:
-          idWallet: 
-            type: number
-            description : wallet identifier
-            example: 224
+          # idWallet: 
+          #   type: number
+          #   description : wallet identifier
+          #   example: 224
           creditCard: 
             $ref: '#/definitions/creditCard'
-          psp:
-            type: string
-            description : psp name
-            example : "Banca PSP Test"
-          idPsp:
-            type: number
-            description : psp identifier
-            example : 2452524
-          pspEditable:
-            type: boolean
-            description : is editable
-            example : true
+          # psp:
+          #   type: string
+          #   description : psp name
+          #   example : "Banca PSP Test"
+          # idPsp:
+          #   type: number
+          #   description : psp identifier
+          #   example : 2452524
+          # pspEditable:
+          #   type: boolean
+          #   description : is editable
+          #   example : true
           idPaymentFromEC:
             type: string
             description : id payment
             example : c8e7c816-2d84-43cb-b961-15cae477a3b5        
-          jiffyCellphoneNumber:
-            type: string
-            description : TBD ???
-          pspListNotOnUs:
-            type: string
-            description : TBD ???        
-          isPspToIgnore:
-            type: boolean
-            description : TBD ???        
-          registeredNexi:
-            type: boolean
-            description : is reg on Nexi
-            example : true
-          matchedPsp:
-            type: boolean
-            description : TBD ???
+          # jiffyCellphoneNumber:
+          #   type: string
+          #   description : TBD ???
+          # pspListNotOnUs:
+          #   type: string
+          #   description : TBD ???        
+          # isPspToIgnore:
+          #   type: boolean
+          #   description : TBD ???        
+          # registeredNexi:
+          #   type: boolean
+          #   description : is reg on Nexi
+          #   example : true
+          # matchedPsp:
+          #   type: boolean
+          #   description : TBD ???
   creditCard:
     type: object
     required: 
-    - id
+    # - id
     - holder
     - pan
     - expireMonth
     - expireYear
     - securityCode
-    - brandLogo
-    - flag3dsVerified
-    - brand
-    - onUs
+    # - brandLogo
+    # - flag3dsVerified
+    # - brand
+    # - onUs
     properties:
-      id:
-        type: number
-        description: identifier
-        example: 1234
+      # id:
+      #   type: number
+      #   description: identifier
+      #   example: 1234
       holder:
         type: string
         description: holder name and surname
@@ -245,23 +281,23 @@ definitions:
         type: number
         description: security code
         example: 333        
-      brandLogo:
-        type: string
-        format: uri
-        description: brand logo
-        example: "blablablabla"        
-      flag3dsVerified:
-        type: boolean
-        description: flag 3ds
-        example: True        
-      brand:
-        type: string
-        description: brand
-        example: ""        
-      onUs:
-        type: boolean
-        description: card onUs
-        example: False        
+      # brandLogo:
+      #   type: string
+      #   format: uri
+      #   description: brand logo
+      #   example: "blablablabla"        
+      # flag3dsVerified:
+      #   type: boolean
+      #   description: flag 3ds
+      #   example: True        
+      # brand:
+      #   type: string
+      #   description: brand
+      #   example: ""        
+      # onUs:
+      #   type: boolean
+      #   description: card onUs
+      #   example: False        
   WalletRes:
     type: object
     required:
@@ -274,6 +310,127 @@ definitions:
         example: 224
       creditCard: 
         $ref: '#/definitions/creditCard'
+  
+  PayResponse:
+    type: object
+    required:
+    - id
+    - created
+    - updated
+    - amount # obeject type - TDB
+    - grandTotal # obeject type - TBD
+    - description
+    - merchant
+    - idStatus
+    - statusMessage
+    - error
+    - success
+    - fee # obeject type - TDB
+    - urlRedirectPSP  # CHIDERE A GIUSEPPE
+    - urlCheckout3ds # "http://pagopa-dev:8080/wallet/checkout?id=MTgwMw==",
+    - paymentModel
+    - token
+    - idWallet
+    - idPsp
+    - idPayment
+    - nodoIdPayment
+    - spcNodeDescription
+    - spcNodeStatus
+    - accountingStatus
+    - authorizationCode
+    - orderNumber
+    - rrn
+    - numAut
+    - paymentCancelled
+    - directAcquirer
+    properties:
+      id:
+        type: string
+        example: "ToBeDefine"
+      created:
+        type: string
+        example: "ToBeDefine"
+      updated:
+        type: string
+        example: "ToBeDefine"
+      amount: # obeject type - TDB
+        type: string
+        example: "ToBeDefine"      
+      grandTotal: # obeject type - TBD
+        type: string
+        example: "ToBeDefine"      
+      description:
+        type: string
+        example: "ToBeDefine"
+      merchant:
+        type: string
+        example: "ToBeDefine"
+      idStatus:
+        type: string
+        example: "ToBeDefine"
+      statusMessage:
+        type: string
+        example: "ToBeDefine"
+      error:
+        type: string
+        example: "ToBeDefine"
+      success:
+        type: string
+        example: "ToBeDefine"
+      fee: # obeject type - TDB
+        type: string
+        example: "ToBeDefine"
+      urlRedirectPSP:  # CHIDERE A GIUSEPPE
+        type: string
+        example: "ToBeDefine"      
+      urlCheckout3ds: # "http://pagopa-dev:8080/wallet/checkout?id=MTgwMw=="
+        type: string
+        example: "ToBeDefine"
+      paymentModel:
+        type: string
+        example: "ToBeDefine"
+      token:
+        type: string
+        example: "ToBeDefine"
+      idWallet:
+        type: string
+        example: "ToBeDefine"
+      idPsp:
+        type: string
+        example: "ToBeDefine"
+      idPayment:
+        type: string
+        example: "ToBeDefine"
+      nodoIdPayment:
+        type: string
+        example: "ToBeDefine"
+      spcNodeDescription:
+        type: string
+        example: "ToBeDefine"
+      spcNodeStatus:
+        type: string
+        example: "ToBeDefine"
+      accountingStatus:
+        type: string
+        example: "ToBeDefine"
+      authorizationCode:
+        type: string
+        example: "ToBeDefine"
+      orderNumber:
+        type: string
+        example: "ToBeDefine"
+      rrn:
+        type: string
+        example: "ToBeDefine"
+      numAut:
+        type: string
+        example: "ToBeDefine"
+      paymentCancelled:
+        type: string
+        example: "ToBeDefine"
+      directAcquirer:
+        type: string
+        example: "ToBeDefine"
 
   Wallet: 
     type: object
@@ -281,7 +438,7 @@ definitions:
     - idWallet
     - cvv
     - type
-    - mobileToken
+    # - mobileToken
     properties:
       idWallet:
         type: number
@@ -294,11 +451,11 @@ definitions:
       type:
         type: string
         description : source type
-        enum: ["web", "app"]
-      mobileToken:
-        type: string
-        description : mobile token get from IO backend
-        example: None
+        enum: ["web-wl", "app"]
+      # mobileToken: // NON CI SONO UTENTI REGISTRATI 
+      #   type: string
+      #   description : mobile token get from IO backend
+      #   example: None
 
   Payment:
     type: object
@@ -320,11 +477,11 @@ definitions:
           IdPayment : 
             $ref: '#/definitions/idPayment'
           amount: {$ref: '#/definitions/amount'}
-          email:
-            type: string
-            description: payer's email address
-            format: email
-            example: user@example.com
+          # email:
+          #   type: string
+          #   description: payer's email address
+          #   format: email
+          #   example: user@example.com
           subject:
             type: string
             description: "TBD ???"
@@ -338,31 +495,31 @@ definitions:
             description: Url to redirect to the creditor to be used at the end payment choice
             format: uri
             example: "http://localhost:8082/pa/ec?paymentId=a9711488-12fe-4a91-8b5a-f58f0b2657d2"
-          isCancelled: 
-            type: boolean
-            example: False
-          stampFlag: 
-            type: boolean
-            description: YES / NO digital stamp flag
-            example: False
-          fiscalCode: 
-            type: string
-            example: "SXOBBP86C06G702J"
-          origin:
-            type: string
-            example: "WALLET_APP"
-          idCart: 
-            type: string
-            description: id cart
-            example: "fQT2qIxBzZVYuIz"
-          detailsList:
-            type: array
-            items:
-              $ref: '#/definitions/Details'
-          iban:
-            type: string
-            description: International Bank Account Number
-            example: "IT28V7783068935Q514JA19BB8U"
+          # isCancelled: 
+          #   type: boolean
+          #   example: False
+          # stampFlag: 
+          #   type: boolean
+          #   description: YES / NO digital stamp flag
+          #   example: False
+          # fiscalCode: 
+          #   type: string
+          #   example: "SXOBBP86C06G702J"
+          # origin:
+          #   type: string
+          #   example: "WALLET_APP"
+          # idCart: 
+          #   type: string
+          #   description: id cart
+          #   example: "fQT2qIxBzZVYuIz"
+          # detailsList:
+          #   type: array
+          #   items:
+          #     $ref: '#/definitions/Details'
+          # iban:
+          #   type: string
+          #   description: International Bank Account Number
+          #   example: "IT28V7783068935Q514JA19BB8U"
   Details:
     type: object
     required:
@@ -425,6 +582,55 @@ definitions:
       decimalDigits:
         type: number
         example: 2
+  CheckRes:
+    type: object
+    required:
+    - idTransaction
+    - idStatus
+    - statusMessage
+    - finalStatus
+    - expired
+    - acsUrl
+    - params
+    - authorizationCode
+    - paymentOrigin
+    - idPayment
+    - result
+    properties:
+      idTransaction:
+        type: string
+        example: "ToBeDefine"
+      idStatus:
+        type: string
+        example: "ToBeDefine"
+      statusMessage:
+        type: string
+        example: "ToBeDefine"
+      finalStatus:
+        type: string
+        example: "ToBeDefine"
+      expired:
+        type: string
+        example: "ToBeDefine"
+      acsUrl:
+        type: string
+        example: "ToBeDefine"
+      params:
+        type: string
+        example: "ToBeDefine"
+      authorizationCode:
+        type: string
+        example: "ToBeDefine"
+      paymentOrigin:
+        type: string
+        example: "ToBeDefine"
+      idPayment:
+        type: string
+        example: "ToBeDefine"
+      result:
+        type: string
+        example: "ToBeDefine"
+
   SimpleSuccess:
     type: object
     required:

@@ -1,6 +1,7 @@
 from payment import PAYMENT as payment
 from payment import TRANSACTION as transaction
 from payment import WALLET as wallet_res
+from payment import CHECK_RES as check_res
 
 from flask import make_response, abort, request
 
@@ -21,5 +22,9 @@ def pay(idPayment):
 
 def addWallet():
     return wallet_res
+
+
+def check():
+    return check_res
 
 

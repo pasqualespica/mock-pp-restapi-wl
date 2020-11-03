@@ -163,3 +163,18 @@ WALLET = {
         # "registeredNexi" : False,
         # "matchedPsp" : None
     }
+
+
+CHECK_RES  = {
+        "idTransaction" : 1883,
+        "idStatus" : 3,
+        "statusMessage" : "Confermato",
+        "finalStatus" : True,
+        "expired" : False,
+        "acsUrl" : None,
+        "params" : None,
+        "authorizationCode" : None,
+        "paymentOrigin" : "WALLET_APP",
+        "idPayment" : "c8e7c816-2d84-43cb-b961-15cae477a3b5",
+        "result" : "OK"
+    }
